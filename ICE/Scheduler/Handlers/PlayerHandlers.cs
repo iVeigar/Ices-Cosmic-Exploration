@@ -11,31 +11,48 @@ internal static unsafe class PlayerHandlers
 {
     public static readonly Dictionary<Time, string[]> timeMap = new()
     {
-            { (0, 1), new[] { "CRP", "ALC" } },
-            { (2, 3), new[] { "MIN" } },
-            { (4, 5), new[] { "BSM", "CUL" } },
-            { (6, 7), new[] { "FSH" } },
-            { (8, 9), new[] { "ARM" } },
-            { (10, 11), new[] { "BTN" } },
-            { (12, 13), new[] { "GSM" } },
-            { (16, 17), new[] { "LTW" } },
-            { (20, 21), new[] { "WVR" } }
-        };
+            { (0, 1), new[] { "刻木匠", "炼金术士" } },
+            { (2, 3), new[] { "采矿工" } },
+            { (4, 5), new[] { "锻铁匠", "烹调师" } },
+            { (6, 7), new[] { "捕鱼人" } },
+            { (8, 9), new[] { "铸甲匠" } },
+            { (10, 11), new[] { "园艺工" } },
+            { (12, 13), new[] { "雕金匠" } },
+            { (16, 17), new[] { "制革匠" } },
+            { (20, 21), new[] { "裁衣匠" } }
+    };
     public static readonly Dictionary<Time, string[]> stage9TimeMap = new()
     {
-        { (0, 1), new[] { "CRP", "ALC", "GSM" } },
-        { (2, 3), new[] { "MIN" } },
-        { (4, 5), new[] { "BSM", "CUL", "LTW" } },
-        { (6, 7), new[] { "FSH" } },
-        { (8, 9), new[] { "ARM", "WVR",  } },
-        { (10, 11), new[] { "BTN" } },
-        { (12, 13), new[] { "GSM", "CRP", "ALC" } },
-        { (14, 15), new[] { "MIN" } },
-        { (16, 17), new[] { "LTW", "BSM", "CUL" } },
-        //{ (18, 19), new[] { "FSH" } },
-        { (20, 21), new[] { "WVR", "ARM" } },
-        { (22, 23), new[] { "BTN" } }
+        { (0, 1), new[] { "刻木匠", "炼金术士", "雕金匠" } },
+        { (2, 3), new[] { "采矿工" } },
+        { (4, 5), new[] { "锻铁匠", "烹调师", "制革匠" } },
+        { (6, 7), new[] { "捕鱼人" } },
+        { (8, 9), new[] { "铸甲匠", "裁衣匠",  } },
+        { (10, 11), new[] { "园艺工" } },
+        { (12, 13), new[] { "雕金匠", "刻木匠", "炼金术士" } },
+        { (14, 15), new[] { "采矿工" } },
+        { (16, 17), new[] { "制革匠", "锻铁匠", "烹调师" } },
+        //{ (18, 19), new[] { "捕鱼人" } },
+        { (20, 21), new[] { "裁衣匠", "铸甲匠" } },
+        { (22, 23), new[] { "园艺工" } }
     };
+
+    public static readonly Dictionary<Time, string[]> stage14TimeMap = new()
+    {
+        { (0, 1), new[] { "刻木匠", "炼金术士", "雕金匠" } },
+        { (2, 3), new[] { "采矿工" } },
+        { (4, 5), new[] { "锻铁匠", "烹调师", "制革匠" } },
+        { (6, 7), new[] { "捕鱼人" } },
+        { (8, 9), new[] { "铸甲匠", "裁衣匠",  } },
+        { (10, 11), new[] { "园艺工" } },
+        { (12, 13), new[] { "雕金匠", "刻木匠", "炼金术士" } },
+        { (14, 15), new[] { "采矿工" } },
+        { (16, 17), new[] { "制革匠", "锻铁匠", "烹调师" } },
+        { (18, 19), new[] { "捕鱼人" } },
+        { (20, 21), new[] { "裁衣匠", "铸甲匠" } },
+        { (22, 23), new[] { "园艺工" } }
+    };
+
     private static readonly uint stellarSprintID = 4398;
 
     public static float Distance(this Vector3 v, Vector3 v2)
@@ -89,7 +106,8 @@ internal static unsafe class PlayerHandlers
         KeyValuePair<(int start, int end), string[]> currentTimeBonus = default;
         KeyValuePair<(int start, int end), string[]> nextTimeBonus = default;
         Dictionary<Time, string[]> currentTimeMap = timeMap;
-        if (CosmicHelper.CurrentLunarDevelopment >= 9) currentTimeMap = stage9TimeMap;
+        if (CosmicHelper.CurrentLunarDevelopment >= 14) currentTimeMap = stage14TimeMap;
+        else if (CosmicHelper.CurrentLunarDevelopment >= 9) currentTimeMap = stage9TimeMap;
 
         (long hours, _) = GetEorzeaTime();
         var currentTime = currentTimeMap.FirstOrDefault(time => hours >= time.Key.start && hours <= time.Key.end);

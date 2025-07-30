@@ -8,7 +8,9 @@ namespace ICE.Ui
 {
     internal class OverlayWindow : Window
     {
-        public OverlayWindow() : base("ICE Overlay", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.AlwaysAutoResize)
+        private bool onlyGrabMission = C.OnlyGrabMission;
+
+        public OverlayWindow() : base("ICE 悬浮窗", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.AlwaysAutoResize)
         {
             P.windowSystem.AddWindow(this);
         }
@@ -22,7 +24,7 @@ namespace ICE.Ui
 
         public override void Draw()
         {
-            ImGui.Text($"Current state: " + SchedulerMain.State.ToString());
+            ImGui.Text($"状态: " + SchedulerMain.State.ToString());
 #if DEBUG
             if (CosmicHelper.CurrentLunarMission != 0)
             {
@@ -32,7 +34,7 @@ namespace ICE.Ui
             }
 #endif
 
-                ImGuiHelpers.ScaledDummy(2);
+            ImGuiHelpers.ScaledDummy(2);
             ImGui.Separator();
             ImGuiHelpers.ScaledDummy(2);
 
@@ -40,29 +42,29 @@ namespace ICE.Ui
 
             if (currentWeather != null)
             {
-                ImGui.Text($"Weather: {currentWeather} -> {nextWeather} in [{nextWeatherTime}]");
+                ImGui.Text($"天气: {currentWeather} -> {nextWeather} in [{nextWeatherTime}]");
             }
 
             (var currentTimedBonus, var nextTimedBonus) = PlayerHandlers.GetTimedJob();
             if (currentTimedBonus.Value == null)
             {
-                ImGui.Text($"Timed Mission(s): None -> {string.Join(", ", nextTimedBonus.Value)} [{nextTimedBonus.Key.start:D2}:00]");
+                ImGui.Text($"限时任务: 无 -> {string.Join(", ", nextTimedBonus.Value)} [{nextTimedBonus.Key.start:D2}:00]");
             }
             else
             {
-                ImGui.Text($"Timed Mission(s): {string.Join(", ", currentTimedBonus.Value)} -> {string.Join(", ", nextTimedBonus.Value)} [{nextTimedBonus.Key.start:D2}:00]");
+                ImGui.Text($"限时任务: {string.Join(", ", currentTimedBonus.Value)} -> {string.Join(", ", nextTimedBonus.Value)} [{nextTimedBonus.Key.start:D2}:00]");
             }
 
             (string type, var locations) = AnnouncementHandlers.CheckForRedAlert();
             if (type != null && locations != null)
             {
-                ImGui.Text($"[Red Alert] {CultureInfo.CurrentCulture.TextInfo.ToTitleCase(type)}");
+                ImGui.Text($"[紧急任务] {CultureInfo.CurrentCulture.TextInfo.ToTitleCase(type)}");
                 ImGui.Spacing();
                 for (int i = 0; i < locations.Length; i++)
                 {
                     if (locations.Length > 0)
                     {
-                        ImGui.Text($"Variant [{i + 1}]");
+                        ImGui.Text($"组合[{i + 1}]");
                         ImGui.SameLine();
                     }
 
@@ -102,7 +104,7 @@ namespace ICE.Ui
             // Start button (disabled while already ticking).
             using (ImRaii.Disabled(SchedulerMain.State != IceState.Idle || !PlayerHelper.UsingSupportedJob()))
             {
-                if (ImGui.Button("Start"))
+                if (ImGui.Button("开始"))
                 {
                     SchedulerMain.EnablePlugin();
                 }
@@ -113,16 +115,21 @@ namespace ICE.Ui
             // Stop button (disabled while not ticking).
             using (ImRaii.Disabled(SchedulerMain.State == IceState.Idle))
             {
-                if (ImGui.Button("Stop"))
+                if (ImGui.Button("停止"))
                 {
                     SchedulerMain.DisablePlugin();
                 }
             }
             ImGui.SameLine();
-            ImGui.Checkbox("Stop after current mission", ref SchedulerMain.StopBeforeGrab);
-            //    //    Type = Dalamud.Game.Text.XivChatType.Debug,
-            //    //});
-            //}
+            ImGui.Checkbox("当前任务结束后停止", ref SchedulerMain.StopBeforeGrab);
+            ImGui.SameLine();
+
+            onlyGrabMission = C.OnlyGrabMission;
+            if (ImGui.Checkbox($"仅刷新和接取任务", ref onlyGrabMission))
+            {
+                C.OnlyGrabMission = onlyGrabMission;
+                C.Save();
+            }
         }
 
         void DrawScore()
@@ -132,14 +139,14 @@ namespace ICE.Ui
                 var (classScore, cappedClassScore, totalScores, classId) = MissionHandler.GetCosmicClassScores();
 
                 ImGui.TextUnformatted(string.Create(CultureInfo.InvariantCulture,
-                    $"{Svc.Data.GetExcelSheet<ClassJob>().GetRow(classId).Abbreviation}: {(float)cappedClassScore / 500_000:P} ({classScore:N0})"));
+                    $"{Svc.Data.GetExcelSheet<ClassJob>().GetRow(classId).Name}: {(float)cappedClassScore / 500_000:P} ({classScore:N0})"));
                 ImGui.SameLine();
                 using (ImRaii.Disabled())
                 {
                     ImGui.TextUnformatted("--");
                     ImGui.SameLine();
                     ImGui.TextUnformatted(string.Create(CultureInfo.InvariantCulture,
-                        $"All: {(float)totalScores / 11 / 500_000:P} ({SeIconChar.CrossWorld.ToIconChar()} {11 * 500_000 - totalScores:N0})"));
+                        $"全职业: {(float)totalScores / 11 / 500_000:P} ({SeIconChar.CrossWorld.ToIconChar()} {11 * 500_000 - totalScores:N0})"));
                 }
             }
             catch

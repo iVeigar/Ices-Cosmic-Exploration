@@ -227,7 +227,14 @@ namespace ICE.Scheduler.Tasks
                 SchedulerMain.NodesVisited = 0;
             }
             if (CosmicHelper.CurrentMissionInfo.Attributes.HasFlag(MissionAttributes.Fish))
+            {
                 SchedulerMain.State |= IceState.Fish;
+                uint missionNodeSetId = CosmicHelper.MissionInfoDict[CosmicHelper.CurrentLunarMission].NodeSet;
+                SchedulerMain.CurrentNodeSet = [.. GatheringUtil.MoonNodeInfoList.Where(x => x.NodeSet == missionNodeSetId)];
+                SchedulerMain.CurrentIndex = 0;
+                SchedulerMain.NodesVisited = 0;
+                SchedulerMain.PreviousNodeSetId = missionNodeSetId;
+            }
             if (mission.ManualMode || C.OnlyGrabMission)
                 SchedulerMain.State |= IceState.ManualMode;
             SchedulerMain.State |= IceState.ExecutingMission;
@@ -320,7 +327,7 @@ namespace ICE.Scheduler.Tasks
                 }
 
                 if (MissionId == 0)
-                    IceLogging.Debug("No mission was found under weather, continuing on");
+                    IceLogging.Debug("No mission was found under critical, continuing on");
                 return true;
             }
             return false;
@@ -748,6 +755,13 @@ namespace ICE.Scheduler.Tasks
             if (EzThrottler.Throttle("GrabMission", 250))
             {
                 IceLogging.Debug($"[Grabbing Mission] Mission Name: {SchedulerMain.MissionName} | MissionId {MissionId}");
+                if (MissionId == 0)
+                {
+                    // TODO: 添加设置：没有可用任务时保持抓取状态或是停止
+                    //SchedulerMain.State &= ~IceState.GrabMission;
+                    //SchedulerMain.DisablePlugin();
+                    return false;
+                }
                 CosmicHelper.MissionListInfo mission = CosmicHelper.MissionInfoDict[MissionId];
                 float distance = mission.MarkerId != 0 ? Vector2.Distance(new Vector2(Player.Position.X, Player.Position.Z), new Vector2(mission.X, mission.Y)) : 0;
                 if (SchedulerMain.Abandon == false && mission.Attributes.HasFlag(MissionAttributes.Gather) && !mission.Attributes.HasFlag(MissionAttributes.Critical) && distance > mission.Radius)

@@ -54,17 +54,17 @@ namespace ICE.Ui
         // Matching up to the sheet `ClassJob` vs `ClassJobCategory` for future use (idk why that sheet even exist...)
         public static List<(string Name, uint Id)> jobOptions = new()
         {
-            ("CRP", 8),
-            ("BSM", 9),
-            ("ARM", 10),
-            ("GSM", 11),
-            ("LTW", 12),
-            ("WVR", 13),
-            ("ALC", 14),
-            ("CUL", 15),
-            ("MIN", 16),
-            ("BTN", 17),
-            ("FSH", 18),
+            ("刻木匠", 8),
+            ("锻铁匠", 9),
+            ("铸甲匠", 10),
+            ("雕金匠", 11),
+            ("制革匠", 12),
+            ("裁衣匠", 13),
+            ("炼金术士", 14),
+            ("烹调师", 15),
+            ("采矿工", 16),
+            ("园艺工", 17),
+            ("捕鱼人", 18),
         };
 
         // Available mission ranks and their identifiers.
@@ -182,6 +182,7 @@ namespace ICE.Ui
                     P.settingWindow.IsOpen = !P.settingWindow.IsOpen;
                 }
 
+                onlyGrabMission = C.OnlyGrabMission;
                 if (ImGui.Checkbox($"Only grab mission", ref onlyGrabMission))
                 {
                     C.OnlyGrabMission = onlyGrabMission;
@@ -202,68 +203,56 @@ namespace ICE.Ui
                     C.StopOnceHitCosmoCredits = stopCosmic;
                     C.Save();
                 }
-                if (stopCosmic)
+                ImGui.Indent(15);
+                ImGui.SetNextItemWidth(-1);
+                if (ImGui.SliderInt("###CosmicStop", ref cosmicCap, 0, 30000))
                 {
-                    ImGui.Indent(15);
-                    ImGui.SetNextItemWidth(-1);
-                    if (ImGui.SliderInt("###CosmicStop", ref cosmicCap, 0, 30000))
-                    {
-                        C.CosmoCreditsCap = cosmicCap;
-                        C.Save();
-                    }
-                    ImGui.Unindent(15);
+                    C.CosmoCreditsCap = cosmicCap;
+                    C.Save();
                 }
+                ImGui.Unindent(15);
 
                 if (ImGui.Checkbox($"Stop at Lunar Credits", ref stopLunar))
                 {
                     C.StopOnceHitLunarCredits = stopLunar;
                     C.Save();
                 }
-                if (stopLunar)
+                ImGui.Indent(15);
+                ImGui.SetNextItemWidth(-1);
+                if (ImGui.SliderInt("###LunarStop", ref lunarCap, 0, 10000))
                 {
-                    ImGui.Indent(15);
-                    ImGui.SetNextItemWidth(-1);
-                    if (ImGui.SliderInt("###LunarStop", ref lunarCap, 0, 10000))
-                    {
-                        C.LunarCreditsCap = lunarCap;
-                        C.Save();
-                    }
-                    ImGui.Unindent(15);
+                    C.LunarCreditsCap = lunarCap;
+                    C.Save();
                 }
+                ImGui.Unindent(15);
 
                 if (ImGui.Checkbox($"Stop at Cosmic Score", ref stopScore))
                 {
                     C.StopOnceHitCosmicScore = stopScore;
                     C.Save();
                 }
-                if (stopScore)
+                ImGui.Indent(15);
+                ImGui.SetNextItemWidth(-1);
+                if (ImGui.InputInt("###ScoreStop", ref scoreCap, 10000, 50000))
                 {
-                    ImGui.Indent(15);
-                    ImGui.SetNextItemWidth(-1);
-                    if (ImGui.InputInt("###ScoreStop", ref scoreCap, 10000, 50000))
-                    {
-                        C.CosmicScoreCap = scoreCap >= 0 ? scoreCap : 0;
-                        C.Save();
-                    }
-                    ImGui.Unindent(15);
+                    C.CosmicScoreCap = scoreCap >= 0 ? scoreCap : 0;
+                    C.Save();
                 }
+                ImGui.Unindent(15);
 
                 if (ImGui.Checkbox($"Stop at Level", ref stopWhenLevel))
                 {
                     C.StopWhenLevel = stopWhenLevel;
                     C.Save();
                 }
-                if (stopWhenLevel)
+                ImGui.Indent(15);
+                ImGui.SetNextItemWidth(-1);
+                if (ImGui.SliderInt("###Level", ref targetLevel, 10, 100))
                 {
-                    ImGui.Indent(15);
-                    ImGui.SetNextItemWidth(-1);
-                    if (ImGui.SliderInt("###Level", ref targetLevel, 10, 100))
-                    {
-                        C.TargetLevel = targetLevel;
-                        C.Save();
-                    }
-                    ImGui.Unindent(15);
+                    C.TargetLevel = targetLevel;
+                    C.Save();
                 }
+                ImGui.Unindent(15);
 
                 ImGui.Spacing();
 
@@ -324,32 +313,32 @@ namespace ICE.Ui
                 ImGui.SetCursorPosX(startX);
 
                 // Row 1: CRP, BSM, ARM, GSM
-                DrawJobSelection(8, "CRP");
+                DrawJobSelection(8, "刻木匠");
                 ImGui.SameLine(0, iconSpacing);
-                DrawJobSelection(9, "BSM");
+                DrawJobSelection(9, "锻铁匠");
                 ImGui.SameLine(0, iconSpacing);
-                DrawJobSelection(10, "ARM");
+                DrawJobSelection(10, "铸甲匠");
                 ImGui.SameLine(0, iconSpacing);
-                DrawJobSelection(11, "GSM");
+                DrawJobSelection(11, "雕金匠");
 
                 // Row 2: LTW, WVR, ALC, CUL
                 ImGui.SetCursorPosX(startX);
 
-                DrawJobSelection(12, "LWT");
+                DrawJobSelection(12, "制革匠");
                 ImGui.SameLine(0, iconSpacing);
-                DrawJobSelection(13, "WVR");
+                DrawJobSelection(13, "裁衣匠");
                 ImGui.SameLine(0, iconSpacing);
-                DrawJobSelection(14, "ALC");
+                DrawJobSelection(14, "炼金术士");
                 ImGui.SameLine(0, iconSpacing);
-                DrawJobSelection(15, "CUL");
+                DrawJobSelection(15, "烹调师");
 
                 // Row 3: MIN, BTN, FSH
                 ImGui.SetCursorPosX(startX);
-                DrawJobSelection(16, "MIN");
+                DrawJobSelection(16, "采矿工");
                 ImGui.SameLine(0, iconSpacing);
-                DrawJobSelection(17, "BTN");
+                DrawJobSelection(17, "园艺工");
                 ImGui.SameLine(0, iconSpacing);
-                DrawJobSelection(18, "FSH");
+                DrawJobSelection(18, "捕鱼人");
 
                 ImGui.Dummy(new Vector2(0, 5));
 
@@ -357,7 +346,7 @@ namespace ICE.Ui
 
                 ImGui.Dummy(new Vector2(0, 5));
 
-                ImGui.Text("Quick Mission Apply");
+                ImGui.Text("快捷任务设置");
 
                 ImGui.Dummy(new Vector2(0, 5));
                 UpdateMissions();
@@ -399,7 +388,7 @@ namespace ICE.Ui
             if (ImGui.BeginChild("###MissionList", new Vector2(0, childHeight), true))
             {
 
-                if (ImGui.Checkbox("Hide Unsupported Missions", ref hideUnsupported))
+                if (ImGui.Checkbox("隐藏不支持的任务", ref hideUnsupported))
                 {
                     C.HideUnsupportedMissions = hideUnsupported;
                     C.Save();
@@ -407,7 +396,7 @@ namespace ICE.Ui
 
                 ImGui.SameLine();
 
-                if (ImGui.Button("Open Table Settings"))
+                if (ImGui.Button("打开表格设置"))
                 {
                     ImGui.OpenPopup("Open Table Settings");
                 }
@@ -579,7 +568,7 @@ namespace ICE.Ui
 
                 if (selectedMission != 0)
                 {
-                    ImGui.Text($"Mission Info (More Detailed)");
+                    ImGui.Text($"任务信息 (详细)");
                     ImGui.Separator();
 
                     var mission = MissionInfoDict[selectedMission];
@@ -587,11 +576,11 @@ namespace ICE.Ui
                     var MissionInfo = new List<(string Label, string Value)>
                     {
                         ("ID:", $"{selectedMission}"),
-                        ("Mission Name:", mission.Name),
-                        ("Cosmocredits:", mission.CosmoCredit.ToString()),
-                        ("Lunar Credits", mission.LunarCredit.ToString()),
-                        ("Silver Requirements:", mission.SilverRequirement.ToString()),
-                        ("Gold Requirements:", mission.GoldRequirement.ToString())
+                        ("任务名称:", mission.Name),
+                        ("宇宙信用点:", mission.CosmoCredit.ToString()),
+                        ("月球信用点", mission.LunarCredit.ToString()),
+                        ("银星达成条件:", mission.SilverRequirement.ToString()),
+                        ("金星达成条件:", mission.GoldRequirement.ToString())
                     };
 
                     float infoSize1 = MissionInfo.Max(row => ImGui.CalcTextSize(row.Label).X) + 10;
@@ -618,7 +607,7 @@ namespace ICE.Ui
 
                         ImGui.TableNextRow();
                         ImGui.TableSetColumnIndex(0);
-                        ImGui.Text($"Tool XP Reward");
+                        ImGui.Text($"宇宙数据奖励:");
 
                         for (int i = mission.ExperienceRewards.Count - 1; i >= 0; i--)
                         {
@@ -637,7 +626,7 @@ namespace ICE.Ui
                                     type = "III";
                                 else if (row.Type == 4)
                                     type = "IV";
-                                ImGui.Text($"Lv {type}:");
+                                ImGui.Text($"数据 {type}:");
 
                                 ImGui.TableSetColumnIndex(1);
                                 ImGui.Text($"{row.Amount}");
@@ -660,7 +649,7 @@ namespace ICE.Ui
 
                         var entry = C.Missions.Where(e => e.Id == selectedMission);
 
-                        ImGui.Text($"Notes:");
+                        ImGui.Text($"笔记:");
                         bool hasPreviousNotes = false;
                         if (mission.Weather != CosmicWeather.FairSkies)
                         {
@@ -707,31 +696,27 @@ namespace ICE.Ui
 
                             bool GatherX = !stellerReductionMission && !collectableMission && !BoonMission && !ChainedMission && !TimedMission && !LimitedQuant;
 
-                            string MissionType = "";
+                            List<string> MissionTypes = [];
                             if (craftMission)
-                            {
-                                MissionType = "Dual Class Mission";
-                            }
-                            else if (LimitedQuant)
-                            {
-                                MissionType = "Limited Quantity/Nodes";
-                            }
-                            else if (TimedMission)
-                                MissionType = "Timed Scoring/Time Attack";
-                            else if (ChainedMission && !BoonMission)
-                                MissionType = "Chained Gather Scoring";
-                            else if (BoonMission && !ChainedMission)
-                                MissionType = "Gatherer's Boon Scoring";
-                            else if (BoonMission && ChainedMission)
-                                MissionType = "Chained + Gatherer's Boon Scoring";
-                            else if (collectableMission && !stellerReductionMission)
-                                MissionType = "Collectable Scoring";
-                            else if (stellerReductionMission)
-                                MissionType = "Steller Reduction/Collectables";
-                            else if (GatherX)
-                                MissionType = "Gather X Amount of Items";
+                                MissionTypes.Add("双职业任务");
+                            if (LimitedQuant)
+                                MissionTypes.Add("有限的采集地点"); // 在有限的采集地点采集道具，根据获得数量给予评价
+                            if (TimedMission)
+                                MissionTypes.Add("尽快完成"); // 尽快获得目标道具，剩余时间越多评价越高
+                            if (ChainedMission && !BoonMission)
+                                MissionTypes.Add("连续成功次数");
+                            if (BoonMission && !ChainedMission)
+                                MissionTypes.Add("额外采集奖励次数");
+                            if (BoonMission && ChainedMission)
+                                MissionTypes.Add("连续成功次数 + 额外采集奖励次数");
+                            if (collectableMission && !stellerReductionMission)
+                                MissionTypes.Add("采集收藏品");
+                            if (stellerReductionMission)
+                                MissionTypes.Add("精选");
+                            if (GatherX)
+                                MissionTypes.Add("采集X个道具"); // 在限定时间内获得尽可能多的目标道具，根据获得数量给予评价
 
-                            ImGui.Text("Mission Type: " + MissionType);
+                            ImGui.Text("任务类型: \n" + string.Join('\n', MissionTypes));
                         }
 #if DEBUG
                         ImGui.Dummy(new(0, 10));
@@ -986,7 +971,7 @@ namespace ICE.Ui
 
                     bool dualclass = craftMission && (gatherMission || fishMission);
 
-                    if (fishMission || (gatherMission && (collectableMission || stellerReductionMission)) || (gatherMission && entry.Value.NodeSet == 0))
+                    if ((fishMission && !TaskFishing.SupportedMissions.Contains(entry.Key)) || (gatherMission && (collectableMission || stellerReductionMission)) || (gatherMission && entry.Value.NodeSet == 0))
                     {
                         unsupported = true;
                     }
@@ -1288,10 +1273,11 @@ namespace ICE.Ui
                     bool collectableMission = missionDict.Attributes.HasFlag(MissionAttributes.Collectables);
                     bool stellerReductionMission = missionDict.Attributes.HasFlag(MissionAttributes.ReducedItems);
                     bool TimedMission = missionDict.Attributes.HasFlag(MissionAttributes.ScoreTimeRemaining);
+                    bool CriticalMission = missionDict.Attributes.HasFlag(MissionAttributes.Critical);
 
                     bool dualclass = craftMission && (gatherMission || fishMission);
 
-                    if (dualclass || fishMission || (gatherMission && (collectableMission || stellerReductionMission)) || (gatherMission && missionDict.NodeSet == 0))
+                    if (dualclass || (fishMission && !TaskFishing.SupportedMissions.Contains(id)) || (gatherMission && (collectableMission || stellerReductionMission)) || (gatherMission && missionDict.NodeSet == 0))
                     {
                         unsupported = true;
                     }
@@ -1314,6 +1300,14 @@ namespace ICE.Ui
                                 mission.TurnInASAP = selectedModes[2];
                                 mission.ManualMode = selectedModes[3];
                             }
+                        }
+                        else if (CriticalMission)
+                        {
+                            mission.TurnInGold = false;
+                            mission.TurnInSilver = false;
+                            mission.TurnInASAP = selectedModes[2];
+                            mission.ManualMode = !mission.TurnInASAP && selectedModes[3];
+
                         }
                         else if (unsupported)
                         {

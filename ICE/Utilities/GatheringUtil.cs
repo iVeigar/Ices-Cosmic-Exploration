@@ -174,6 +174,12 @@ public static unsafe class GatheringUtil
         // { new Vector2(566, -908), 24 },
         { new Vector2(188, -201), 25 },
         { new Vector2(748, 101), 26 },
+
+        // fisher
+        { new Vector2(573, 573), 490 },
+        { new Vector2(-281, -104), 542 },
+        { new Vector2(-139, -283), 543 },
+        { new Vector2(104, -269), 544 },
     };
 
     public class GathNodeInfo
@@ -1803,6 +1809,50 @@ public static unsafe class GatheringUtil
 
         // Botanist
 
+        #endregion
+
+        #region Fisher Nodes
+        #region Critical
+            new GathNodeInfo
+            {
+                ZoneId = 1237,
+                NodeId = 0xE0000542,
+                Position = new Vector3(-299.624f, 24.358f, -102.712f),
+                LandZone = new Vector3(-299.624f, 24.358f, -102.712f),
+                GatheringType = 4,
+                NodeSet = 542
+            },
+            new GathNodeInfo
+            {
+                ZoneId = 1237,
+                NodeId = 0xE0000543,
+                Position = new Vector3(-127.254f, 20.031f, -264.508f),
+                LandZone = new Vector3(-127.254f, 20.031f, -264.508f),
+                GatheringType = 4,
+                NodeSet = 543
+            },
+            new GathNodeInfo
+            {
+                ZoneId = 1237,
+                NodeId = 0xE0000544,
+                Position = new Vector3(102.715f, 17.348f, -223.628f),
+                LandZone = new Vector3(102.715f, 17.348f, -223.628f),
+                GatheringType = 4,
+                NodeSet = 544
+            },
+        #endregion
+
+        #region Timed
+            new GathNodeInfo
+            {
+                ZoneId = 1237,
+                NodeId = 0xE0000490,
+                Position = new Vector3(562.036f, 51.004f, 532.578f),
+                LandZone = new Vector3(562.036f, 51.004f, 532.578f),
+                GatheringType = 4,
+                NodeSet = 490
+            },
+        #endregion
         #endregion
 
     };

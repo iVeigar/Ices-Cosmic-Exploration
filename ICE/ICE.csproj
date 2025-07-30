@@ -11,6 +11,7 @@
     <TargetFramework>net9.0-windows7.0</TargetFramework>
     <InformationalVersion>$([System.DateTime]::UtcNow.ToString("yyyy\-MM\-dd HH\:mm\:ss"))</InformationalVersion>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 	<NoWarn>CS8618; CS8625; CS8629; </NoWarn>
   </PropertyGroup>
 

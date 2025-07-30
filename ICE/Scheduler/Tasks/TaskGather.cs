@@ -107,7 +107,8 @@ namespace ICE.Scheduler.Tasks
                             {
                                 P.TaskManager.Enqueue(() => Utils.TargetgameObject(gameObject), "Targeting gameObject");
                                 P.TaskManager.Enqueue(() => InteractGather(gameObject), "Interacting with Object");
-                                P.TaskManager.Enqueue(() => GatheringAddonReady(), "Making sure gathering addon is ready");
+                                // P.TaskManager.Enqueue(() => GatheringAddonReady(), "Making sure gathering addon is ready");
+                                // 有时会出现交互后采集界面未出现的情况，也就是卡住了，此时需要再次与采集点交互，因此把GatheringAddonReady判断移动至InteractGather中
                                 return;
                             }
                             else
@@ -324,7 +325,7 @@ namespace ICE.Scheduler.Tasks
 
         internal unsafe static bool? InteractGather(IGameObject? gameObject)
         {
-            if (Svc.Condition[ConditionFlag.Gathering])
+            if (Svc.Condition[ConditionFlag.Gathering] && GatheringAddonReady() == true)
             {
                 return true;
             }
