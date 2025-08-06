@@ -7,32 +7,15 @@ namespace ICE.Scheduler
 {
     internal static unsafe class SchedulerMain
     {
-        internal static long StartAt = 0;
-        internal static int PrevScore = 0;
         internal static bool EnablePlugin()
         {
             State = Start;
             StartClassJob = (Job)PlayerHelper.GetClassJobId();
-            StartAt = Environment.TickCount64;
-            var (classScore, cappedClassScore, totalScores, classId) = MissionHandler.GetCosmicClassScores();
-            PrevScore = classScore;
             return true;
         }
         internal static bool DisablePlugin()
         {
             P.TaskManager.Abort();
-            if (StopBeforeGrab)
-            {
-                if (StartAt != 0)
-                {
-                    var t = (Environment.TickCount64 - StartAt) / 1000f;
-                    var (classScore, cappedClassScore, totalScores, classId) = MissionHandler.GetCosmicClassScores();
-                    var s = classScore - PrevScore;
-                    DuoLog.Information($"时长{t:f2}s 分数{s} ({s / t * 60:f2}/min)");
-                }
-            }
-            StartAt = 0;
-            PrevScore = 0;
             StopBeforeGrab = false;
             State = Idle;
             StartClassJob = Job.ADV;
@@ -105,11 +88,11 @@ namespace ICE.Scheduler
                     case var s when s.HasFlag(GrabMission):
                         TaskMissionFind.Enqueue();
                         break;
+                    case var s when s.HasFlag(ManualMode):
+                        TaskManualMode.ZenMode();
+                        break;
                     case var s when s.HasFlag(Fish) && TaskFishing.SupportedMissions.Contains(CosmicHelper.CurrentLunarMission) && s.HasFlag(ExecutingMission):
                         TaskFishing.TryEnqueueFishing();
-                        break;
-                    case var s when s.HasFlag(ManualMode) || s.HasFlag(Fish) && !TaskFishing.SupportedMissions.Contains(CosmicHelper.CurrentLunarMission):
-                        TaskManualMode.ZenMode();
                         break;
                     case var s when s.HasFlag(Gather) && s.HasFlag(ExecutingMission):
                         TaskGather.TryEnqueueGathering();

@@ -64,7 +64,7 @@ namespace ICE.Ui
                 {
                     if (locations.Length > 0)
                     {
-                        ImGui.Text($"×éºÏ[{i + 1}]");
+                        ImGui.Text($"{(char)('A' + i)}");
                         ImGui.SameLine();
                     }
 
